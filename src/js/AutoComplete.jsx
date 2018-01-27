@@ -1,6 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
+import countries from './countries.js';
+
 require('../sass/main.scss');
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -20,6 +22,25 @@ document.addEventListener('DOMContentLoaded', function() {
 
 		validateCountry = () => {
 			return true;
+			// check if value is on the list and save it OR CLEAR THE TEXT !!!
+		}
+
+		componentDidMount() {
+
+			let countriesUrl = 'http://vocab.nic.in/rest.php/country/json';
+			let tempCountries = [];
+
+			fetch(countriesUrl).then( r => r.json() ).then( response => {
+				response = response.countries;  // gets rid of an enclosing key
+				response.forEach( item => {
+					tempCountries.push(item.country)
+				}) // returns an array of objects { country_id: "...", country_name: "..." }
+
+
+				this.setState({
+					countries : tempCountries
+				})
+			});
 		}
 
 		render() {

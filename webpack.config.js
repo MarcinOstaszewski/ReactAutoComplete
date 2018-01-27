@@ -9,7 +9,7 @@ require('es6-promise').polyfill();
 module.exports = {
     // entry: ['./src/js/main.jsx'],
     entry: {
-        'js/app.js': './src/js/Main.jsx'
+        'js/app.js': './src/js/AutoComplete.jsx'
     },
 
     output: {

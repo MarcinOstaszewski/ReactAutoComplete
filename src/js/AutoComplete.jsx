@@ -1,8 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import countries from './countries.js';
-
 require('../sass/main.scss');
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -18,6 +16,7 @@ document.addEventListener('DOMContentLoaded', function() {
 		
 		handleChange = (event) => {
 			this.setState({ autoCompleteText: event.target.value });
+			
 		}
 
 		validateCountry = () => {
@@ -44,6 +43,30 @@ document.addEventListener('DOMContentLoaded', function() {
 		}
 
 		render() {
+			let filteredCountryNamesArray = [];
+			this.state.countries.forEach( item => {
+				if (item["country_name"].includes(this.state.autoCompleteText.toUpperCase())) {
+					filteredCountryNamesArray.push([this.state.autoCompleteText, item["country_name"]]);
+				}
+			});
+
+			// console.log(filteredCountryNamesArray);
+			
+			
+			// for (var i = 0; i <= this.state.countries.length; i++) {
+
+			// }
+
+
+			// let prompt = this.state.countries.filter( item => {
+			// 	let countryItem = item['country_name'];
+			// 	if (countryItem.includes("PO")) {
+			// 		countryNamesArray.push(countryItem);
+			// 	};
+			// 	return true;
+			// });
+			
+
 			return (
 				<div className="mainPage">
 					<div className="container">

@@ -16,12 +16,11 @@ document.addEventListener('DOMContentLoaded', function() {
 		
 		handleChange = (event) => {
 			this.setState({ autoCompleteText: event.target.value });
-			
 		}
 
 		validateCountry = () => {
 			return true;
-			// check if value is on the list and save it OR CLEAR THE TEXT !!!
+			// !!! check if value is on the list and save it OR CLEAR THE TEXT !!!
 		}
 
 		componentDidMount() {
@@ -43,29 +42,23 @@ document.addEventListener('DOMContentLoaded', function() {
 		}
 
 		render() {
+
 			let filteredCountryNamesArray = [];
 			this.state.countries.forEach( item => {
 				if (item["country_name"].includes(this.state.autoCompleteText.toUpperCase())) {
-					filteredCountryNamesArray.push([this.state.autoCompleteText, item["country_name"]]);
+					filteredCountryNamesArray.push([item["country_name"], item["country_id"]]);
 				}
+			});			
+			console.log(filteredCountryNamesArray);
+
+			let countryPrompt = filteredCountryNamesArray.map( (item, index) => {
+				return ( 
+					<li key={index} className="promptList"> 
+						<span className="leftAlign">{item[1]} </span> 
+						<span className="rightAlign"> {item[0]}</span>
+					</li>
+				);
 			});
-
-			// console.log(filteredCountryNamesArray);
-			
-			
-			// for (var i = 0; i <= this.state.countries.length; i++) {
-
-			// }
-
-
-			// let prompt = this.state.countries.filter( item => {
-			// 	let countryItem = item['country_name'];
-			// 	if (countryItem.includes("PO")) {
-			// 		countryNamesArray.push(countryItem);
-			// 	};
-			// 	return true;
-			// });
-			
 
 			return (
 				<div className="mainPage">
@@ -85,7 +78,9 @@ document.addEventListener('DOMContentLoaded', function() {
 							onChange={this.handleChange}
 							onBlur={this.validateCountry}
 						/>
-						<div className="prompt"></div>
+						<ul className="countryPrompt">
+							{this.state.autoCompleteText != "" ? countryPrompt : null }
+						</ul>
 					</div>
 				</div>
 			)

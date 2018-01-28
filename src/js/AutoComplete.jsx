@@ -21,20 +21,35 @@ document.addEventListener('DOMContentLoaded', function() {
 
 		promptItemClicked = (event) => {
 			this.setState({autoCompleteText: event.currentTarget.id});
+			document.getElementById("countryInput").focus();
 		}
 
 		validateCountry = (event) => {
 			event.preventDefault();
-			// !!! check if value is on the list and save it OR CLEAR THE TEXT !!!
+			// Checks if given value is on the list and SAVES it or CLEARS the text
 			if (this.state.countryNames.includes( this.state.autoCompleteText )) {
-				console.log("Wybrano państwo: ", this.state.autoCompleteText)
+				document.getElementById("countryChosenText").innerText = this.state.autoCompleteText;
+				document.getElementById("description").innerText = "Wybrano: ";
+				document.getElementById("countryChosen").classList.toggle("invisible");
+				document.getElementById("countryChosenText").classList.toggle("invisible");
+				document.getElementById("countryChosenButton").classList.toggle("invisible");
+				document.getElementById("form").classList.toggle("invisible");
+				document.getElementById("countryPrompt").classList.toggle("invisible");
 			} else {
 				this.setState({
 					autoCompleteText : ""
 				});
-				console.log("Nie ma takiego państwa");
+				console.log("No such country");
 			}
 			return true;
+		}
+
+		handleItemBlur = () => {
+
+		}
+
+		changeChosenCountry = () => {
+
 		}
 
 		createPromptList = (inputArray) => {
@@ -80,13 +95,14 @@ document.addEventListener('DOMContentLoaded', function() {
 					filteredCountryNamesArray.push([item["country_name"], item["country_id"]]);
 				}
 				if (this.state.autoCompleteText.length >= 3) { 
-					filteredCountryIdsArray = []; // delete this list if input longer then ID
+					filteredCountryIdsArray = []; // delete this list if input longer then ID (>2 letters)
 				} else {
 					if (item["country_id"].slice(0,this.state.autoCompleteText.length) == this.state.autoCompleteText.toUpperCase()) {
 						filteredCountryIdsArray.push([item["country_name"], item["country_id"]]);
 					}
 				}
-				});		
+			});		
+
 			filteredCountryNamesArray.sort();
 			filteredCountryIdsArray.sort();
 			
@@ -104,17 +120,20 @@ document.addEventListener('DOMContentLoaded', function() {
 				</li>
 			);
 			
+
+
 			return (
 				<div className="mainPage">
 					<div className="container">
 						<h1 className="title">
-							My first ReactJS AutoComplete Component
+							ReactJS AutoComplete Component
 						</h1>
-						<p className="description">
-							Start typing a country name or ID:
+						<p id="description">
+							Choose a country by starting to type its name or code:
 						</p>
-						<form onSubmit={this.validateCountry}>
+						<form id="form" onSubmit={this.validateCountry}>
 							<input
+								id="countryInput"
 								required
 								autoFocus="true"
 								autoComplete="off"
@@ -123,14 +142,18 @@ document.addEventListener('DOMContentLoaded', function() {
 								type="text"
 								value={this.state.autoCompleteText}
 								onChange={this.handleChange}
-								// onBlur={this.validateCountry}
+								onBlur={this.handleInputBlur}
 							/>
-							<ul className="countryPrompt">
+							<ul id="countryPrompt">
 								{this.state.autoCompleteText != "" ? namesList : null }
 								{this.state.autoCompleteText != "" ? divider : null }
 								{this.state.autoCompleteText.length > 0 && this.state.autoCompleteText.length < 3 ? idsList : null }
 							</ul>
 						</form>
+						<div id="countryChosen" className="countryChosen invisible">
+							<div id="countryChosenText" className="countryChosenText invisible">sdadasda</div>
+							<div id="countryChosenButton" className="countryChosenButton invisible" onClick={this.changeChosenCountry}> ZMIEŃ</div>
+						</div>
 					</div>
 				</div>
 			)

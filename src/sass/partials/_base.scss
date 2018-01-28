@@ -17,9 +17,9 @@ body {
             }
             .countryInput {
                 background-color: #fff;                
-                width: 400px;
+                width: 375px;
                 height: 26px;
-                font-size: 14px;
+                font-size: 12px;
                 margin: 15px 0 0 0;
                 padding: 0 5px;
                 color: #000;                
@@ -28,9 +28,37 @@ body {
             .countryPrompt {
                 padding: 0 5px;
                 background-color: #fff;
-                width: 400px;
-                color: #333;
-                font-size: 14px;
+                width: 375px;
+                font-size: 12px;
+                box-shadow: 2px 2px 5px #999;
+                .promptList {
+                    display: block;
+                    line-height: 14px;
+                    .listItem {
+                        display: flex;
+                        flex-direction: row;
+                        text-decoration: none;
+                        color: #999;
+                        justify-content: space-between;
+                        &:hover {
+                            color: #fff;
+                            background-color: rgb(136, 192, 230);
+                        }
+                        .leftAlign {
+                            text-align: left;
+                            // display: inline-block;
+                        }
+                        .rightAlign {
+                            font-style: italic;
+                        }
+                        .divider {
+                            font-size: 10px;
+                            line-height: 18px;
+                            align-content: center;
+                        }
+                    }
+
+                }
 
             }
         }

@@ -9691,7 +9691,8 @@ document.addEventListener('DOMContentLoaded', function () {
 			value: function componentDidMount() {
 				var _this2 = this;
 
-				var countriesUrl = 'http://vocab.nic.in/rest.php/country/json';
+				// let countriesUrl = 'http://vocab.nic.in/rest.php/country/json';
+				countriesUrl = 'https://marcinostaszewski.github.io/CountriesJSON/countries.json';
 				var tempCountriesWithIds = [],
 				    tempCountryNames = [];
 

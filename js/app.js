@@ -9692,7 +9692,7 @@ document.addEventListener('DOMContentLoaded', function () {
 				var _this2 = this;
 
 				// let countriesUrl = 'http://vocab.nic.in/rest.php/country/json';
-				countriesUrl = 'https://marcinostaszewski.github.io/CountriesJSON/countries.json';
+				var countriesUrl = 'https://marcinostaszewski.github.io/CountriesJSON/countries.json';
 				var tempCountriesWithIds = [],
 				    tempCountryNames = [];
 

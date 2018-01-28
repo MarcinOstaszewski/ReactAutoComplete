@@ -9623,14 +9623,65 @@ document.addEventListener('DOMContentLoaded', function () {
 				_this.setState({ autoCompleteText: event.target.value });
 			};
 
-			_this.validateCountry = function () {
+			_this.promptItemClicked = function (event) {
+				_this.setState({ autoCompleteText: event.currentTarget.id });
+				document.getElementById("countryInput").focus();
+			};
+
+			_this.validateCountry = function (event) {
+				event.preventDefault();
+				// Checks if given value is on the list and SAVES it or CLEARS the text
+				if (_this.state.countryNames.includes(_this.state.autoCompleteText)) {
+					document.getElementById("countryChosenText").innerText = _this.state.autoCompleteText;
+					document.getElementById("description").innerText = "Wybrano: ";
+					document.getElementById("countryChosen").classList.toggle("invisible");
+					document.getElementById("countryChosenText").classList.toggle("invisible");
+					document.getElementById("countryChosenButton").classList.toggle("invisible");
+					document.getElementById("form").classList.toggle("invisible");
+					document.getElementById("countryPrompt").classList.toggle("invisible");
+				} else {
+					_this.setState({
+						autoCompleteText: ""
+					});
+					console.log("No such country");
+				}
 				return true;
-				// !!! check if value is on the list and save it OR CLEAR THE TEXT !!!
+			};
+
+			_this.handleItemBlur = function () {};
+
+			_this.changeChosenCountry = function () {};
+
+			_this.createPromptList = function (inputArray) {
+				var promptList = inputArray.map(function (item, index) {
+					return _react2.default.createElement(
+						'li',
+						{ key: index, className: 'promptList' },
+						_react2.default.createElement(
+							'div',
+							{ className: 'listItem', onClick: _this.promptItemClicked, id: item[0] },
+							_react2.default.createElement(
+								'span',
+								{ className: 'leftAlign' },
+								item[0]
+							),
+							_react2.default.createElement(
+								'span',
+								{ className: 'rightAlign' },
+								'( ',
+								item[1],
+								' )'
+							)
+						)
+					);
+				});
+				return promptList;
 			};
 
 			_this.state = {
 				autoCompleteText: "",
-				countries: []
+				countriesWithIds: [],
+				countryNames: []
 			};
 			return _this;
 		}
@@ -9641,19 +9692,21 @@ document.addEventListener('DOMContentLoaded', function () {
 				var _this2 = this;
 
 				var countriesUrl = 'http://vocab.nic.in/rest.php/country/json';
-				var tempCountries = [];
+				var tempCountriesWithIds = [],
+				    tempCountryNames = [];
 
 				fetch(countriesUrl).then(function (r) {
 					return r.json();
 				}).then(function (response) {
-					response = response.countries; // gets rid of an enclosing key
+					response = response.countries; // gets rid of an enclosing object key
 					response.forEach(function (item) {
-						tempCountries.push(item.country);
-					}); // returns an array of objects { country_id: "...", country_name: "..." }
-
+						tempCountriesWithIds.push(item.country);
+						tempCountryNames.push(item.country["country_name"]);
+					}); // creates an array of objects { country_id: "...", country_name: "..." } and an array of country names
 
 					_this2.setState({
-						countries: tempCountries
+						countriesWithIds: tempCountriesWithIds,
+						countryNames: tempCountryNames.sort()
 					});
 				});
 			}
@@ -9662,32 +9715,41 @@ document.addEventListener('DOMContentLoaded', function () {
 			value: function render() {
 				var _this3 = this;
 
-				var filteredCountryNamesArray = [];
-				this.state.countries.forEach(function (item) {
-					if (item["country_name"].includes(_this3.state.autoCompleteText.toUpperCase())) {
+				var filteredCountryNamesArray = [],
+				    filteredCountryIdsArray = [];
+				this.state.countriesWithIds.forEach(function (item) {
+					if (item["country_name"].slice(0, _this3.state.autoCompleteText.length) == _this3.state.autoCompleteText.toUpperCase()) {
 						filteredCountryNamesArray.push([item["country_name"], item["country_id"]]);
 					}
+					if (_this3.state.autoCompleteText.length >= 3) {
+						filteredCountryIdsArray = []; // delete this list if input longer then ID (>2 letters)
+					} else {
+						if (item["country_id"].slice(0, _this3.state.autoCompleteText.length) == _this3.state.autoCompleteText.toUpperCase()) {
+							filteredCountryIdsArray.push([item["country_name"], item["country_id"]]);
+						}
+					}
 				});
-				console.log(filteredCountryNamesArray);
 
-				var countryPrompt = filteredCountryNamesArray.map(function (item, index) {
-					return _react2.default.createElement(
-						'li',
-						{ key: index, className: 'promptList' },
+				filteredCountryNamesArray.sort();
+				filteredCountryIdsArray.sort();
+
+				var idsList = this.createPromptList(filteredCountryIdsArray);
+				var namesList = this.createPromptList(filteredCountryNamesArray);
+				var divider = _react2.default.createElement(
+					'li',
+					{ key: '0000', className: 'promptList' },
+					_react2.default.createElement(
+						'div',
+						{ className: 'listItem' },
+						_react2.default.createElement('span', null),
 						_react2.default.createElement(
 							'span',
-							{ className: 'leftAlign' },
-							item[1],
-							' '
+							{ className: 'divider' },
+							'- - - - - matchings found in country code - - - - -'
 						),
-						_react2.default.createElement(
-							'span',
-							{ className: 'rightAlign' },
-							' ',
-							item[0]
-						)
-					);
-				});
+						_react2.default.createElement('span', null)
+					)
+				);
 
 				return _react2.default.createElement(
 					'div',
@@ -9698,26 +9760,49 @@ document.addEventListener('DOMContentLoaded', function () {
 						_react2.default.createElement(
 							'h1',
 							{ className: 'title' },
-							'M\xF3j pierwszy AutoComplete w ReactJS'
+							'ReactJS AutoComplete Component'
 						),
 						_react2.default.createElement(
 							'p',
-							{ className: 'description' },
-							'Podaj nazw\u0119 pa\u0144stwa:'
+							{ id: 'description' },
+							'Choose a country by starting to type its name or code:'
 						),
-						_react2.default.createElement('input', {
-							required: true,
-							className: 'countryInput',
-							name: 'country',
-							type: 'text',
-							value: this.state.autoCompleteText,
-							onChange: this.handleChange,
-							onBlur: this.validateCountry
-						}),
 						_react2.default.createElement(
-							'ul',
-							{ className: 'countryPrompt' },
-							this.state.autoCompleteText != "" ? countryPrompt : null
+							'form',
+							{ id: 'form', onSubmit: this.validateCountry },
+							_react2.default.createElement('input', {
+								id: 'countryInput',
+								required: true,
+								autoFocus: 'true',
+								autoComplete: 'off',
+								className: 'countryInput',
+								name: 'country',
+								type: 'text',
+								value: this.state.autoCompleteText,
+								onChange: this.handleChange,
+								onBlur: this.handleInputBlur
+							}),
+							_react2.default.createElement(
+								'ul',
+								{ id: 'countryPrompt' },
+								this.state.autoCompleteText != "" ? namesList : null,
+								this.state.autoCompleteText != "" ? divider : null,
+								this.state.autoCompleteText.length > 0 && this.state.autoCompleteText.length < 3 ? idsList : null
+							)
+						),
+						_react2.default.createElement(
+							'div',
+							{ id: 'countryChosen', className: 'countryChosen invisible' },
+							_react2.default.createElement(
+								'div',
+								{ id: 'countryChosenText', className: 'countryChosenText invisible' },
+								'sdadasda'
+							),
+							_react2.default.createElement(
+								'div',
+								{ id: 'countryChosenButton', className: 'countryChosenButton invisible', onClick: this.changeChosenCountry },
+								' ZMIE\u0143'
+							)
 						)
 					)
 				);
@@ -22243,7 +22328,7 @@ exports = module.exports = __webpack_require__(186)(false);
 
 
 // module
-exports.push([module.i, "/* http://meyerweb.com/eric/tools/css/reset/ \r\n   v2.0 | 20110126\r\n   License: none (public domain)\r\n*/\nhtml,\nbody,\ndiv,\nspan,\nh1,\nh2,\nh3,\nh4,\nh5,\nh6,\np,\nblockquote,\npre,\na,\nem,\nimg,\nins,\nb,\nu,\ni,\ncenter,\ndl,\ndt,\ndd,\nol,\nul,\nli,\nfieldset,\nform,\nlabel,\ntable,\ntbody,\ntfoot,\nthead,\ntr,\nth,\ntd,\narticle,\naside,\nfigure,\nfigcaption,\nfooter,\nheader,\nmenu,\nnav,\nsection,\nsummary {\n  margin: 0;\n  padding: 0;\n  border: 0;\n  font-size: 100%;\n  font: inherit;\n  vertical-align: baseline; }\n\n/* HTML5 display-role reset for older browsers */\narticle,\naside,\ndetails,\nfigcaption,\nfigure,\nfooter,\nheader,\nhgroup,\nmenu,\nnav,\nsection {\n  display: block; }\n\nbody {\n  line-height: 1; }\n\nol,\nul {\n  list-style: none; }\n\nblockquote,\nq {\n  quotes: none; }\n\nblockquote:before,\nblockquote:after,\nq:before,\nq:after {\n  content: '';\n  content: none; }\n\ntable {\n  border-collapse: collapse;\n  border-spacing: 0; }\n\n* {\n  box-sizing: border-box; }\n\nbody {\n  font-family: sans-serif;\n  background-color: #f5f5f5; }\n  body .mainPage {\n    width: 100%; }\n    body .mainPage .container {\n      width: 800px;\n      margin: 30px auto; }\n      body .mainPage .container .title {\n        font-size: 18px;\n        font-weight: bold;\n        margin: 15px 0; }\n      body .mainPage .container .countryInput {\n        background-color: #fff;\n        width: 400px;\n        height: 26px;\n        font-size: 14px;\n        margin: 15px 0 0 0;\n        padding: 0 5px;\n        color: #000;\n        text-transform: uppercase; }\n      body .mainPage .container .countryPrompt {\n        padding: 0 5px;\n        background-color: #fff;\n        width: 400px;\n        color: #333;\n        font-size: 14px; }\n", ""]);
+exports.push([module.i, "/* http://meyerweb.com/eric/tools/css/reset/ \r\n   v2.0 | 20110126\r\n   License: none (public domain)\r\n*/\nhtml,\nbody,\ndiv,\nspan,\nh1,\nh2,\nh3,\nh4,\nh5,\nh6,\np,\nblockquote,\npre,\na,\nem,\nimg,\nins,\nb,\nu,\ni,\ncenter,\ndl,\ndt,\ndd,\nol,\nul,\nli,\nfieldset,\nform,\nlabel,\ntable,\ntbody,\ntfoot,\nthead,\ntr,\nth,\ntd,\narticle,\naside,\nfigure,\nfigcaption,\nfooter,\nheader,\nmenu,\nnav,\nsection,\nsummary {\n  margin: 0;\n  padding: 0;\n  border: 0;\n  font-size: 100%;\n  font: inherit;\n  vertical-align: baseline; }\n\n/* HTML5 display-role reset for older browsers */\narticle,\naside,\ndetails,\nfigcaption,\nfigure,\nfooter,\nheader,\nhgroup,\nmenu,\nnav,\nsection {\n  display: block; }\n\nbody {\n  line-height: 1; }\n\nol,\nul {\n  list-style: none; }\n\nblockquote,\nq {\n  quotes: none; }\n\nblockquote:before,\nblockquote:after,\nq:before,\nq:after {\n  content: '';\n  content: none; }\n\ntable {\n  border-collapse: collapse;\n  border-spacing: 0; }\n\n* {\n  box-sizing: border-box; }\n\nbody {\n  font-family: sans-serif;\n  background-color: #f5f5f5; }\n  body .mainPage {\n    width: 100%; }\n    body .mainPage .container {\n      width: 800px;\n      margin: 30px auto; }\n      body .mainPage .container .title {\n        font-size: 18px;\n        font-weight: bold;\n        margin: 15px 0; }\n      body .mainPage .container #description {\n        font-style: italic; }\n      body .mainPage .container .countryInput {\n        background-color: #fff;\n        width: 375px;\n        height: 26px;\n        font-size: 12px;\n        margin: 15px 0 0 0;\n        padding: 0 5px;\n        color: #000;\n        text-transform: uppercase; }\n      body .mainPage .container #countryPrompt {\n        padding: 0 5px;\n        background-color: #fff;\n        width: 375px;\n        font-size: 12px;\n        box-shadow: 2px 2px 5px #999; }\n        body .mainPage .container #countryPrompt:hover {\n          cursor: pointer; }\n        body .mainPage .container #countryPrompt .promptList {\n          display: block;\n          line-height: 14px; }\n          body .mainPage .container #countryPrompt .promptList .listItem {\n            display: flex;\n            flex-direction: row;\n            justify-content: space-between;\n            text-decoration: none;\n            color: #999; }\n            body .mainPage .container #countryPrompt .promptList .listItem:hover {\n              color: #fff;\n              background-color: #88c0e6; }\n            body .mainPage .container #countryPrompt .promptList .listItem .leftAlign {\n              text-align: left; }\n            body .mainPage .container #countryPrompt .promptList .listItem .rightAlign {\n              font-style: italic; }\n            body .mainPage .container #countryPrompt .promptList .listItem .divider {\n              font-size: 10px;\n              line-height: 18px;\n              align-content: center; }\n      body .mainPage .container .countryChosen {\n        margin-top: 20px;\n        display: flex;\n        flex-direction: row;\n        justify-content: space-between;\n        width: 375px; }\n        body .mainPage .container .countryChosen .countryChosenText {\n          color: #000;\n          display: inline-block; }\n        body .mainPage .container .countryChosen .countryChosenButton {\n          color: #d22;\n          display: inline-block;\n          text-decoration: underline; }\n          body .mainPage .container .countryChosen .countryChosenButton:hover {\n            cursor: pointer; }\n        body .mainPage .container .countryChosen .invisible {\n          display: none; }\n      body .mainPage .container .invisible {\n        display: none; }\n", ""]);
 
 // exports
 

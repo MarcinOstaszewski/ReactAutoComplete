@@ -9628,29 +9628,40 @@ document.addEventListener('DOMContentLoaded', function () {
 				document.getElementById("countryInput").focus();
 			};
 
+			_this.toggleVisibility = function () {
+				document.getElementById("countryChosen").classList.toggle("invisible");
+				document.getElementById("countryChosenText").classList.toggle("invisible");
+				document.getElementById("countryChosenButton").classList.toggle("invisible");
+				document.getElementById("form").classList.toggle("invisible");
+				document.getElementById("countryPrompt").classList.toggle("invisible");
+			};
+
 			_this.validateCountry = function (event) {
 				event.preventDefault();
 				// Checks if given value is on the list and SAVES it or CLEARS the text
 				if (_this.state.countryNames.includes(_this.state.autoCompleteText)) {
 					document.getElementById("countryChosenText").innerText = _this.state.autoCompleteText;
 					document.getElementById("description").innerText = "Wybrano: ";
-					document.getElementById("countryChosen").classList.toggle("invisible");
-					document.getElementById("countryChosenText").classList.toggle("invisible");
-					document.getElementById("countryChosenButton").classList.toggle("invisible");
-					document.getElementById("form").classList.toggle("invisible");
-					document.getElementById("countryPrompt").classList.toggle("invisible");
+					_this.toggleVisibility();
+					_this.setState({
+						chosenCountryName: _this.state.autoCompleteText
+					});
 				} else {
 					_this.setState({
 						autoCompleteText: ""
 					});
-					console.log("No such country");
+					document.getElementById("description").innerText = "Choose a country by starting to type its name or code:";
 				}
 				return true;
 			};
 
-			_this.handleItemBlur = function () {};
+			_this.handleInputBlur = function () {
+				console.log();
+			};
 
-			_this.changeChosenCountry = function () {};
+			_this.changeChosenCountry = function () {
+				_this.toggleVisibility();
+			};
 
 			_this.createPromptList = function (inputArray) {
 				var promptList = inputArray.map(function (item, index) {
@@ -9681,7 +9692,8 @@ document.addEventListener('DOMContentLoaded', function () {
 			_this.state = {
 				autoCompleteText: "",
 				countriesWithIds: [],
-				countryNames: []
+				countryNames: [],
+				chosenCountryName: ""
 			};
 			return _this;
 		}
@@ -9691,7 +9703,6 @@ document.addEventListener('DOMContentLoaded', function () {
 			value: function componentDidMount() {
 				var _this2 = this;
 
-				// let countriesUrl = 'http://vocab.nic.in/rest.php/country/json';
 				var countriesUrl = 'https://marcinostaszewski.github.io/CountriesJSON/countries.json';
 				var tempCountriesWithIds = [],
 				    tempCountryNames = [];
@@ -9787,7 +9798,7 @@ document.addEventListener('DOMContentLoaded', function () {
 								'ul',
 								{ id: 'countryPrompt' },
 								this.state.autoCompleteText != "" ? namesList : null,
-								this.state.autoCompleteText != "" ? divider : null,
+								this.state.autoCompleteText != "" && filteredCountryIdsArray != 0 ? divider : null,
 								this.state.autoCompleteText.length > 0 && this.state.autoCompleteText.length < 3 ? idsList : null
 							)
 						),

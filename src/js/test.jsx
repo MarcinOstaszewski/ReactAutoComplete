@@ -11,8 +11,7 @@ document.addEventListener('DOMContentLoaded', function() {
 			this.state={
 				autoCompleteText : "",
 				countriesWithIds : [],
-				countryNames: [],
-				chosenCountryName: ""
+				countryNames: []
 			}			
 		}	
 		
@@ -25,39 +24,32 @@ document.addEventListener('DOMContentLoaded', function() {
 			document.getElementById("countryInput").focus();
 		}
 
-		toggleVisibility = () => {
-			document.getElementById("countryChosen").classList.toggle("invisible");
-			document.getElementById("countryChosenText").classList.toggle("invisible");
-			document.getElementById("countryChosenButton").classList.toggle("invisible");
-			document.getElementById("form").classList.toggle("invisible");
-			document.getElementById("countryPrompt").classList.toggle("invisible");
-		}
-
 		validateCountry = (event) => {
 			event.preventDefault();
 			// Checks if given value is on the list and SAVES it or CLEARS the text
 			if (this.state.countryNames.includes( this.state.autoCompleteText )) {
 				document.getElementById("countryChosenText").innerText = this.state.autoCompleteText;
 				document.getElementById("description").innerText = "Wybrano: ";
-				this.toggleVisibility();
-				this.setState({
-					chosenCountryName : this.state.autoCompleteText
-				})
+				document.getElementById("countryChosen").classList.toggle("invisible");
+				document.getElementById("countryChosenText").classList.toggle("invisible");
+				document.getElementById("countryChosenButton").classList.toggle("invisible");
+				document.getElementById("form").classList.toggle("invisible");
+				document.getElementById("countryPrompt").classList.toggle("invisible");
 			} else {
 				this.setState({
 					autoCompleteText : ""
 				});
-				document.getElementById("description").innerText = "Choose a country by starting to type its name or code:";
+				console.log("No such country");
 			}
 			return true;
 		}
 
-		handleInputBlur = () => {
-			console.log();
+		handleItemBlur = () => {
+
 		}
 
 		changeChosenCountry = () => {
-			this.toggleVisibility();
+
 		}
 
 		createPromptList = (inputArray) => {
@@ -76,6 +68,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 		componentDidMount() {
 
+			// let countriesUrl = 'http://vocab.nic.in/rest.php/country/json';
 			let countriesUrl = 'https://marcinostaszewski.github.io/CountriesJSON/countries.json';
 			let tempCountriesWithIds = [],
 				tempCountryNames = [];
@@ -128,6 +121,8 @@ document.addEventListener('DOMContentLoaded', function() {
 				</li>
 			);
 			
+
+
 			return (
 				<div className="mainPage">
 					<div className="container">
@@ -137,7 +132,7 @@ document.addEventListener('DOMContentLoaded', function() {
 						<p id="description">
 							Choose a country by starting to type its name or code:
 						</p>
-						<form id="form" onSubmit={this.validateCountry}>								
+						<form id="form" onSubmit={this.validateCountry}>
 							<input
 								id="countryInput"
 								required
@@ -151,9 +146,9 @@ document.addEventListener('DOMContentLoaded', function() {
 								onBlur={this.handleInputBlur}
 							/>
 							<ul id="countryPrompt">
-								{ this.state.autoCompleteText != "" ? namesList : null }
-								{ this.state.autoCompleteText != "" && filteredCountryIdsArray != 0 ? divider : null }
-								{ this.state.autoCompleteText.length > 0 && this.state.autoCompleteText.length < 3 ? idsList : null }
+								{this.state.autoCompleteText != "" ? namesList : null }
+								{this.state.autoCompleteText != "" ? divider : null }
+								{this.state.autoCompleteText.length > 0 && this.state.autoCompleteText.length < 3 ? idsList : null }
 							</ul>
 						</form>
 						<div id="countryChosen" className="countryChosen invisible">

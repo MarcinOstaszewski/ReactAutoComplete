@@ -15,6 +15,9 @@ body {
                 font-weight: bold;
                 margin: 15px 0;
             }
+            #description {
+                font-style: italic;
+            }
             .countryInput {
                 background-color: #fff;                
                 width: 375px;
@@ -25,21 +28,24 @@ body {
                 color: #000;                
                 text-transform: uppercase;
             }
-            .countryPrompt {
+            #countryPrompt {
                 padding: 0 5px;
                 background-color: #fff;
                 width: 375px;
                 font-size: 12px;
                 box-shadow: 2px 2px 5px #999;
+                &:hover {
+                    cursor: pointer;
+                }
                 .promptList {
                     display: block;
                     line-height: 14px;
                     .listItem {
                         display: flex;
                         flex-direction: row;
+                        justify-content: space-between;
                         text-decoration: none;
                         color: #999;
-                        justify-content: space-between;
                         &:hover {
                             color: #fff;
                             background-color: rgb(136, 192, 230);
@@ -57,9 +63,32 @@ body {
                             align-content: center;
                         }
                     }
-
                 }
-
+            }
+            .countryChosen {
+                margin-top: 20px;
+                display: flex;
+                flex-direction: row;
+                justify-content: space-between;
+                width: 375px;
+                .countryChosenText {
+                    color: #000;
+                    display: inline-block;
+                }
+                .countryChosenButton {
+                    color: #d22;
+                    display: inline-block;
+                    text-decoration: underline;
+                    &:hover {
+                        cursor: pointer;
+                    }
+                }
+                .invisible {
+                    display: none;
+                }
+            }
+            .invisible {
+                display: none;
             }
         }
     }
